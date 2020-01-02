@@ -1,142 +1,179 @@
 package tel_ran.tests;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.Random;
 
-public class CurrentBoardTests extends TestBase{
+public class CurrentBoardTests extends TestBase {
+
+    @BeforeMethod
+    public void initTest() {
+        WebElement loginIcon = driver.findElement(By
+                .xpath("//a[@class='btn btn-sm btn-link text-white']"));
+
+        loginIcon.click();
+        waitUntilElementIsClickable(By.id("login"), 30);
+        WebElement userField = driver.findElement(By.id("user"));
+        userField.click();
+        userField.clear();
+        userField.sendKeys("451f@mail.ru");
+        driver.findElement(By.id("login")).click();
+
+        waitUntilElementIsClickable(By.id("login-submit"), 30);
+        driver.findElement(By.id("login-submit")).click();
+
+        waitUntilElementIsClickable(By.id("password"), 30);
+        waitUntilElementIsClickable(By.id("login-submit"), 30);
+        driver.findElement(By.id("password")).sendKeys("androm26");
+        driver.findElement(By.id("login-submit")).click();
+
+        waitUntilElementIsClickable(By
+                .xpath("//button[@data-test-id='header-boards-menu-button']"), 30);
+
+    }
 
     @Test
-    public void  createNewList() throws InterruptedException {
+    public void createNewList() {
 
-        driver.findElement(By.xpath("//a[@class='btn btn-sm btn-link text-white']")).click();
-
-
-        Thread.sleep(5000);
-
-
-        driver.findElement(By.xpath("//input[@id='user']")).sendKeys("451f@mail.ru");
-        Thread.sleep(5000);
-        driver.findElement(By.cssSelector("#login")).click();
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//button[@id='login-submit']")).click();
-
-
-
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(("androm26"));
-        driver.findElement(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']")).click();
-
-
-        Thread.sleep(30000);
-
-
+        //----Open 'QA 4 Auto' board
+        waitUntilElementIsVisible(By.xpath("//div[@title='QA4 Auto']/.."), 20);
         driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
-
-        Thread.sleep(5000);
-
-
-
-        try {
-
-
-
-            if(driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).isDisplayed()){
-
-                driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).click();
-
-                driver.findElement(By.xpath("//a[@class='js-close-list']")).click();
-
+        //Thread.sleep(15000);
+        waitUntilElementIsClickable(By.cssSelector(".placeholder"), 30);
+        //-----Add a new list------
+        WebElement addListButton = driver.findElement(By.cssSelector(".placeholder"));
+        String nameAddListButton = addListButton.getText();
+        addListButton.click();
+        waitUntilElementIsVisible(By.cssSelector(".list-name-input"), 10);
+        String str = genRandomString(7);
+        //System.out.println("Name button - " + nameAddListButton);
+        int quantityListAtFirst = driver.findElements(By.xpath("//h2")).size();
+        if (nameAddListButton.equals("Add another list")) {
+            boolean exitName = false;
+            //System.out.println("Size-" + driver.findElements(By.xpath("//h2/../textarea")).size());
+            for (WebElement element : driver.findElements(By.xpath("//h2/../textarea"))) {
+                //System.out.println("Name - " + element.getText());
+                if (element.getText().equals(str)) exitName = true;
             }
-        }catch (Exception e){
-
-
-            driver.findElement(By.xpath("//span[@class='placeholder']")).click();
-            driver.findElement(By.xpath("//input[@placeholder='Enter list title...']")).sendKeys("1");
-            driver.findElement(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']")).click();
-            Thread.sleep(5000);
-            driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).click();
-
-            Thread.sleep(5000);
-
-            driver.findElement(By.xpath("//a[@class='js-close-list']")).click();
-
-
-            System.out.println("Ok");
+            if (exitName) str = stringWithRandomNumber(1000, str);
         }
 
-        Thread.sleep(5000);
+        driver.findElement(By.cssSelector(".list-name-input"))
+                .sendKeys(str);
+        driver.findElement(By.xpath("//input[@type='submit']")).click();
 
+        waitUntilElementIsClickable(By.cssSelector("a.js-cancel-edit"), 10);
+        driver.findElement(By.cssSelector("a.js-cancel-edit")).click();
+        waitUntilElementIsVisible(By.cssSelector("span.placeholder"), 10);
+        int quantityListAtTheEnd = driver
+                .findElements(By.xpath("//h2")).size();
+        Assert.assertEquals(quantityListAtFirst + 1, quantityListAtTheEnd);
+        Assert.assertEquals(driver.findElement(By.cssSelector("span.placeholder")).getText(), "Add another list");
+
+    }
+
+    @Test
+    public void addFirstCardInNewList() {
+
+        //----Open 'QA 4 Auto' board
+        driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
+
+        waitUntilElementIsClickable(By.cssSelector(".placeholder"), 30);
+        //--------Get qantity of 'Add another card' buttons at the beginning----
+        int quantityAddAnotherButtonBeg = driver.findElements(By.xpath("//span[@class= 'js-add-another-card']")).size();
+
+        //-----Add a new list------
+        driver.findElement(By.cssSelector(".placeholder")).click();
+
+        waitUntilElementIsVisible(By.cssSelector(".list-name-input"), 10);
+        driver.findElement(By.cssSelector(".list-name-input"))
+                .sendKeys("New List");
+        waitUntilElementIsClickable(By.xpath("//input[@type='submit']"), 10);
+        driver.findElement(By.xpath("//input[@type='submit']")).click();
+
+        waitUntilElementIsClickable(By.cssSelector("a.js-cancel-edit"), 10);
+        driver.findElement(By.cssSelector("a.js-cancel-edit")).click();
+
+        waitUntilElementIsVisible(By.cssSelector(".placeholder"), 10);
+        //----- Get the last 'Add card' button----
+        waitUntilAllElementsAreVisible(By.xpath("//span[@class = 'js-add-a-card']"), 15);
+        List<WebElement> listAddCardButtons = driver.findElements(By.xpath("//span[@class = 'js-add-a-card']"));
+        int sizeLstAddCardButtons = listAddCardButtons.size();
+        WebElement lastAddCardButton = listAddCardButtons.get(sizeLstAddCardButtons - 1);
+        //----Add a first card for any new list
+        lastAddCardButton.click();
+
+        waitUntilElementIsClickable(By
+                .xpath("//input[@class='primary confirm mod-compact js-add-card']"), 10);
+        driver.findElement(By
+                .xpath("//textarea[@placeholder='Enter a title for this card…']")).sendKeys("text");
+        driver.findElement(By
+                .xpath("//input[@class='primary confirm mod-compact js-add-card']")).click();
+
+        waitUntilElementIsClickable(By.cssSelector("a.js-cancel"), 10);
+        driver.findElement(By.cssSelector("a.js-cancel")).click();
+
+        //--------Get qantity of 'Add another card' buttons at the end----
+        waitUntilAllElementsAreVisible(By.xpath("//span[@class= 'js-add-another-card']"), 10);
+        int quantityAddAnotherButtonEnd = driver.findElements(By.xpath("//span[@class= 'js-add-another-card']")).size();
+
+        Assert.assertEquals(quantityAddAnotherButtonBeg + 1, quantityAddAnotherButtonEnd);
+
+
+    }
+
+    @Test
+    public void deleteList() throws InterruptedException {
+        waitUntilElementIsVisible(By.xpath("//div[@title='QA4 Auto']/.."), 20);
+        driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
+
+
+
+        waitUntilElementIsClickable(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']"),30);
+        int quantityBeg = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
+        driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).click();
+
+
+        waitUntilElementIsClickable(By.xpath("//a[@class='js-close-list']"),30);
+
+        driver.findElement(By.xpath("//a[@class='js-close-list']")).click();
+
+
+        waitUntilElementIsClickable(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']"),30);
+
+        int quantityEnd = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
+
+
+
+
+        Assert.assertEquals(quantityBeg -1 , quantityEnd);
 
 
     }
 
 
-    @Test
-    public void addFirstCardInNewList() throws InterruptedException {
-        driver.findElement(By.xpath("//a[@class='btn btn-sm btn-link text-white']")).click();
-
-
-        Thread.sleep(5000);
-
-
-        driver.findElement(By.xpath("//input[@id='user']")).sendKeys("451f@mail.ru");
-        Thread.sleep(5000);
-        driver.findElement(By.cssSelector("#login")).click();
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//button[@id='login-submit']")).click();
-
-
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(("androm26"));
-        driver.findElement(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']")).click();
-
-
-        Thread.sleep(30000);
-
-        driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
-
-
-        Thread.sleep(5000);
-
-        String tmp = driver.findElement(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).getText();
-//        System.out.println(tmp);
-
-        List<WebElement> list = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"));
-        String a = tmp + (int)(Math.random()*100);
-        for(int i = 0; i < list.size(); i++){
-
-            System.out.println(list.get(i).getText());
-            System.out.println(list.get(i).getText().equals(a));
-
-            if(list.get(i).getText().equals(a)){
-                a = tmp + (int)(Math.random()*100);
-                i = 0;
-            }
+    public static String genRandomString(int num) {
+        String str = "";
+        int number;
+        Random gen = new Random();
+        for (int i = 0; i < num; i++) {
+            number = '!' + gen.nextInt('z' - '!' + 1);
+            str = str + (char) number;
         }
-
-
-
-        System.out.println(a);
-
-
-        driver.findElement(By.xpath("//span[@class='placeholder']")).click();
-        Thread.sleep(5000);
-
-        driver.findElement(By.xpath("//input[@placeholder='Enter list title...']")).sendKeys(a);
-        Thread.sleep(5000);
-
-        driver.findElement(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']")).click();
-        Thread.sleep(5000);
-
-
-        Thread.sleep(5000);
-
+        return str;
     }
 
-
+    public static String stringWithRandomNumber(int num, String str) {
+        Random gen = new Random();
+        return str + gen.nextInt(num);
+    }
 
 
 }
