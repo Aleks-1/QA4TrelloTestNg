@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+import java.util.Random;
 
 import static tel_ran.tests.TestBase.quantityBeg;
 
@@ -100,6 +101,63 @@ public class BoardsPageHelper extends PageBase{
 
         return list.get(i-2).getText().equals(list.get(i-1).getText());
 
+    }
+
+    public void genNameListAndCreat(){
+
+        WebElement addListButton = driver.findElement(By.cssSelector(".placeholder"));
+        String nameAddListButton = addListButton.getText();
+        addListButton.click();
+        waitUntilElementIsVisible(By.cssSelector(".list-name-input"), 10);
+        String str = genRandomString(7);
+        //System.out.println("Name button - " + nameAddListButton);
+        int quantityListAtFirst = driver.findElements(By.xpath("//h2")).size();
+        if (nameAddListButton.equals("Add another list")) {
+            boolean exitName = false;
+            //System.out.println("Size-" + driver.findElements(By.xpath("//h2/../textarea")).size());
+            for (WebElement element : driver.findElements(By.xpath("//h2/../textarea"))) {
+                //System.out.println("Name - " + element.getText());
+                if (element.getText().equals(str)) exitName = true;
+            }
+            if (exitName) str = stringWithRandomNumber(1000, str);
+        }
+
+        driver.findElement(By.cssSelector(".list-name-input"))
+                .sendKeys(str);
+        driver.findElement(By.xpath("//input[@type='submit']")).click();
+
+        waitUntilElementIsClickable(By.cssSelector("a.js-cancel-edit"), 10);
+        driver.findElement(By.cssSelector("a.js-cancel-edit")).click();
+    }
+
+public boolean VerifyQuantityLists(){
+
+        int quantityListAtTheEnd = driver
+            .findElements(By.xpath("//h2")).size();
+
+        return true;
+
+
+}
+
+
+
+
+
+    public static String genRandomString(int num) {
+        String str = "";
+        int number;
+        Random gen = new Random();
+        for (int i = 0; i < num; i++) {
+            number = '!' + gen.nextInt('z' - '!' + 1);
+            str = str + (char) number;
+        }
+        return str;
+    }
+
+    public static String stringWithRandomNumber(int num, String str) {
+        Random gen = new Random();
+        return str + gen.nextInt(num);
     }
 
 

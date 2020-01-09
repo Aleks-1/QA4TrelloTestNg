@@ -19,7 +19,7 @@ public class UserProfilePageTests extends TestBase {
         WebElement userField = driver.findElement(By.id("user"));
         userField.click();
         userField.clear();
-        userField.sendKeys("marinaqatest2019@gmail.com");
+        userField.sendKeys("451f@mail.ru");
         driver.findElement(By.id("login")).click();
 
         waitUntilElementIsClickable(By.id("login-submit"),30);
@@ -27,7 +27,7 @@ public class UserProfilePageTests extends TestBase {
 
         waitUntilElementIsClickable(By.id("password"),30);
         waitUntilElementIsClickable(By.id("login-submit"),30);
-        driver.findElement(By.id("password")).sendKeys("marinaqa");
+        driver.findElement(By.id("password")).sendKeys("androm26");
         driver.findElement(By.id("login-submit")).click();
 
         waitUntilElementIsClickable(By
