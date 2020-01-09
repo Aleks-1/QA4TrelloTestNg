@@ -5,35 +5,48 @@ import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import tel_ran.helpers.BoardsPageHelper;
+import tel_ran.helpers.HomePageHelper;
+import tel_ran.helpers.LoginPageHelper;
 
-import javax.xml.bind.Element;
 import java.util.List;
 
+
+
 public class CurrentBoardPageTests extends TestBase {
+    HomePageHelper homePage;
+    LoginPageHelper loginPage;
+    BoardsPageHelper boardsPage;
+
 
     @BeforeMethod
     public void initTest() {
-        WebElement loginIcon = driver.findElement(By
-                .xpath("//a[@class='btn btn-sm btn-link text-white']"));
 
-        loginIcon.click();
-        waitUntilElementIsClickable(By.id("login"), 30);
-        WebElement userField = driver.findElement(By.id("user"));
-        userField.click();
-        userField.clear();
-        userField.sendKeys("451f@mail.ru");
-        driver.findElement(By.id("login")).click();
+        homePage = new HomePageHelper(driver);
+        loginPage = new LoginPageHelper(driver);
+        boardsPage = new BoardsPageHelper(driver);
 
-        waitUntilElementIsClickable(By.id("login-submit"), 30);
-        driver.findElement(By.id("login-submit")).click();
-
-        waitUntilElementIsClickable(By.id("password"), 30);
-        waitUntilElementIsClickable(By.id("login-submit"), 30);
-        driver.findElement(By.id("password")).sendKeys("androm26");
-        driver.findElement(By.id("login-submit")).click();
-
-        waitUntilElementIsClickable(By
-                .xpath("//button[@data-test-id='header-boards-menu-button']"), 30);
+//        WebElement loginIcon = driver.findElement(By
+//                .xpath("//a[@class='btn btn-sm btn-link text-white']"));
+//
+//        loginIcon.click();
+//        waitUntilElementIsClickable(By.id("login"), 30);
+//        WebElement userField = driver.findElement(By.id("user"));
+//        userField.click();
+//        userField.clear();
+//        userField.sendKeys("451f@mail.ru");
+//        driver.findElement(By.id("login")).click();
+//
+//        waitUntilElementIsClickable(By.id("login-submit"), 30);
+//        driver.findElement(By.id("login-submit")).click();
+//
+//        waitUntilElementIsClickable(By.id("password"), 30);
+//        waitUntilElementIsClickable(By.id("login-submit"), 30);
+//        driver.findElement(By.id("password")).sendKeys("androm26");
+//        driver.findElement(By.id("login-submit")).click();
+//
+//        waitUntilElementIsClickable(By
+//                .xpath("//button[@data-test-id='header-boards-menu-button']"), 30);
 
     }
 
@@ -41,50 +54,24 @@ public class CurrentBoardPageTests extends TestBase {
 
     public void testCopyFirstList(){
 
-        waitUntilElementIsVisible(By.xpath("//div[@title='QA4 Auto']/.."), 20);
-        driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
+        homePage.openLoginPage();
+        loginPage.waitUntilPageIsLoaded();
+        loginPage.loginToTrelloAsAtlassian(LOGIN,PASSWORD);
+        boardsPage.waitUntilPageIsLoaded();
 
-//        waitUntilElementIsVisible(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"),10);
-        waitUntilElementIsVisible(By.xpath("//span[@class='placeholder']"),20);
-        int quantityBeg = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
-        System.out.println(quantityBeg);
+        boardsPage.enterMyBoard();
 
-        if(quantityBeg == 0){
+        boardsPage.quantityCheckBefore();
 
-        waitUntilElementIsClickable(By.xpath("//span[@class='placeholder']"),30);
-        driver.findElement(By.xpath("//span[@class='placeholder']")).click();
-        waitUntilElementIsVisible(By.xpath("//input[@class='list-name-input']"),30);
-        driver.findElement(By.xpath("//input[@class='list-name-input']")).clear();
-        driver.findElement(By.xpath("//input[@class='list-name-input']")).sendKeys("NewList");
-        waitUntilElementIsClickable(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']"),20);
-        driver.findElement(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']")).click();
-        quantityBeg++;
+        boardsPage.creatIfNotLists();
 
+        boardsPage.copyList();
 
-        }
-        waitUntilElementIsClickable(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']"),30);
-        driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).click();
-        waitUntilElementIsVisible(By.xpath("//a[@class='js-copy-list']"),30);
-        driver.findElement(By.xpath("//a[@class='js-copy-list']")).click();
-        waitUntilElementIsClickable(By.xpath("//input[@class='primary wide js-submit']"),20);
-        driver.findElement(By.xpath("//input[@class='primary wide js-submit']")).click();
+        boardsPage.quantityCheckAfter();
 
-        waitUntilElementIsClickable(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"),20);
+        Assert.assertEquals(quantityBeg +1, quantityEnd);
 
-        int quantityEnd = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
-        System.out.println(quantityEnd);
-
-        List<WebElement> list = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"));
-
-        int i = list.size();
-
-
-
-
-
-        Assert.assertEquals(quantityBeg + 1  , quantityEnd);
-
-        Assert.assertEquals(list.get(i-2).getText(), list.get(i-1).getText());
+        Assert.assertTrue(boardsPage.copyValidation());
 
 
 

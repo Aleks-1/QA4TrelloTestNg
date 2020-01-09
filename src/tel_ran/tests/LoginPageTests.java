@@ -1,102 +1,62 @@
 package tel_ran.tests;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import tel_ran.helpers.BoardsPageHelper;
+import tel_ran.helpers.HomePageHelper;
+import tel_ran.helpers.LoginPageHelper;
 
-public class LoginPageTests extends TestBase {
+public class LoginPageTests extends TestBase{
+    HomePageHelper homePage;
+    LoginPageHelper loginPage;
+    BoardsPageHelper boardsPage;
+
+    @BeforeMethod
+    public void initTests(){
+        homePage = new HomePageHelper(driver);
+        loginPage = new LoginPageHelper(driver);
+        boardsPage = new BoardsPageHelper(driver);
+    }
 
 
     @Test
-    public void logintoTrelloPositive() throws InterruptedException {
-
-        waitUntilElementIsClickable(By.xpath("//a[@class='btn btn-sm btn-link text-white']"), 20);
-        driver.findElement(By.xpath("//a[@class='btn btn-sm btn-link text-white']")).click();
-
-//        Thread.sleep(5000);
-        waitUntilElementIsVisible(By.xpath("//input[@id='user']"), 20);
-        driver.findElement(By.xpath("//input[@id='user']")).sendKeys("451f@mail.ru");
-//        Thread.sleep(5000);
-        waitUntilElementIsClickable(By.cssSelector("#login"), 20);
-        driver.findElement(By.cssSelector("#login")).click();
-//        Thread.sleep(5000);
-
-        waitUntilElementIsClickable(By.xpath("//button[@id='login-submit']"), 20);
-        driver.findElement(By.xpath("//button[@id='login-submit']")).click();
-
-//        Thread.sleep(5000);
-        waitUntilElementIsVisible(By.xpath("//input[@id='password']"), 20);
-        waitUntilElementIsClickable(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']"), 20);
-
-        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(("androm26"));
-        driver.findElement(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']")).click();
-
-//        Thread.sleep(30000);
-
-        waitUntilElementIsClickable(By.xpath("//span[@class='MEu8ZECLGMLeab']"), 50);
-
-        Assert.assertTrue(driver.findElement(By.xpath("//button[@data-test-id='header-boards-menu-button']")).isDisplayed());
-        Assert.assertTrue(driver.findElement(By.xpath("//h3[@class='boards-page-board-section-header-name']")).isDisplayed());
-
-
+    public void loginToTrelloPositive()  {
+        homePage.openLoginPage();
+        loginPage.waitUntilPageIsLoaded();
+        loginPage.loginToTrelloAsAtlassian(LOGIN,PASSWORD);
+        boardsPage.waitUntilPageIsLoaded();
+        Assert.assertTrue(boardsPage.verifyIfBoardsIconIsDisplayed());
+        Assert.assertTrue(boardsPage
+                .verifyIfPersonalBoardsHeaderIsDisplayed());
     }
 
     @Test
-    public void LoginTrelloNegative() throws InterruptedException {
-
-        waitUntilElementIsClickable(By.xpath("//a[@class='btn btn-sm btn-link text-white']"), 20);
-
-        driver.findElement(By.xpath("//a[@class='btn btn-sm btn-link text-white']")).click();
-
-
-//        Thread.sleep(5000);
-
-        waitUntilElementIsVisible(By.xpath("//input[@id='user']"), 20);
-        driver.findElement(By.xpath("//input[@id='user']")).sendKeys("4511f@mail.ru");
-//        Thread.sleep(5000);
-        waitUntilElementIsVisible(By.cssSelector("#login"), 20);
-        driver.findElement(By.cssSelector("#login")).click();
-//        Thread.sleep(5000);
-        waitUntilElementIsVisible(By.xpath("//p[@class='error-message']"), 20);
-        System.out.println(driver.findElement(By.xpath("//p[@class='error-message']")).getText());
-//        Thread.sleep(5000);
-        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='error-message']")).isDisplayed());
+    public void loginIncorrectPassNegative() {
+        homePage.openLoginPage();
+        loginPage.waitUntilPageIsLoaded();
+        loginPage.loginToTrelloAsAtlassian(LOGIN,PASSWORD+"1");
+        loginPage.waitPasswordError();
+        Assert.assertTrue(loginPage.verifyIfPasswordErrorIsCorrect(),"Error message is not correct");
 
     }
-
     @Test
+    public void loginIncorrectLoginNegative(){
 
-    public void LoginTrelloNegativePas() throws InterruptedException {
+        homePage.openLoginPage();
+        loginPage.waitUntilPageIsLoaded();
+        loginPage.enterLoginWithOutAtl(LOGIN + "1");
+        loginPage.clickLoginWithoutAtl();
+        loginPage.waitLoginError();
+        Assert.assertTrue(loginPage.verifyIfLoginErrorIsCorrect(),"Error message is not correct");
 
-        waitUntilElementIsClickable(By.xpath("//a[@class='btn btn-sm btn-link text-white']"), 20);
-        driver.findElement(By.xpath("//a[@class='btn btn-sm btn-link text-white']")).click();
-
-
-//        Thread.sleep(5000);
-
-        waitUntilElementIsVisible(By.xpath("//input[@id='user']"), 20);
-        driver.findElement(By.xpath("//input[@id='user']")).sendKeys("451f@mail.ru");
-//        Thread.sleep(5000);
-        waitUntilElementIsClickable(By.cssSelector("#login"),20);
-        driver.findElement(By.cssSelector("#login")).click();
-//        Thread.sleep(5000);
-        waitUntilElementIsClickable(By.xpath("//button[@id='login-submit']"),20);
-        driver.findElement(By.xpath("//button[@id='login-submit']")).click();
-
-//        Thread.sleep(5000);
-        waitUntilElementIsVisible(By.xpath("//input[@id='password']"),20);
-        waitUntilElementIsClickable(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']"),20);
-        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(("androm2611"));
-        driver.findElement(By.xpath("//button[@id='login-submit']//span[@class='css-t5emrf']")).click();
-//        Thread.sleep(5000);
-
-        waitUntilElementIsVisible(By.xpath("//div[@id='login-error']"),20);
-        System.out.println(driver.findElement(By.xpath("//div[@id='login-error']")).getText());
-
-
-//        Thread.sleep(5000);
-
-        Assert.assertTrue(driver.findElement(By.xpath("//div[@id='login-error']")).isDisplayed());
 
     }
 
