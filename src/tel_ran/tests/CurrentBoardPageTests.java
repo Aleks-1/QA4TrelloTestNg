@@ -114,6 +114,7 @@ public class CurrentBoardPageTests extends TestBase {
         //----Add a first card for any new list
         lastAddCardButton.click();
 
+
         waitUntilElementIsClickable(By
                 .xpath("//input[@class='primary confirm mod-compact js-add-card']"), 10);
         driver.findElement(By
