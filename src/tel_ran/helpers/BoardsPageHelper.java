@@ -3,6 +3,8 @@ package tel_ran.helpers;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
 
 import java.util.List;
 import java.util.Random;
@@ -19,41 +21,75 @@ public class BoardsPageHelper extends PageBase{
         super(driver);
     }
 
+    @FindBy (xpath = "//button[@data-test-id='header-boards-menu-button']")
+    WebElement ButtonBoardsLeftCorner;
+
+    @FindBy(xpath = "//h3[@class='boards-page-board-section-header-name']")
+    WebElement TitleMainPageBoards;
+
+    @FindBy(xpath = "//div[@title='QA4 Auto']/..")
+    WebElement myBoard;
+
+    @FindBy(xpath = "//span[@class='placeholder']")
+    WebElement addAnotherListButton;
+
+    @FindBy(xpath = "//textarea[@class='list-header-name mod-list-name js-list-name-input']")
+    List<WebElement> namesList;
+
+    @FindBy(xpath = "//input[@class='list-name-input']")
+    WebElement  fieldEnterListTitle;
+    @FindBy(xpath = "//input[@class='primary mod-list-add-button js-save-edit']")
+    WebElement ButtonAddListSaveList;
+
+    @FindBy(xpath = "//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")
+    WebElement ListMenuButton;
+
+    @FindBy(xpath = "//a[@class='js-copy-list']")
+    WebElement menuItemCopyList;
+
+    @FindBy(xpath = "//input[@class='primary wide js-submit']")
+    WebElement ButtonCreateList;
+
+    @FindBy(xpath = "//textarea[@class='list-header-name mod-list-name js-list-name-input']")
+    WebElement titleList;
+
+    @FindBy(xpath = "a.js-cancel-edit")
+    WebElement buttonCancelEdit;
+
     @Override
     public void waitUntilPageIsLoaded() {
-        waitUntilElementIsClickable(By
-                .xpath("//button[@data-test-id='header-boards-menu-button']"),30);
+        waitUntilElementIsClickable(ButtonBoardsLeftCorner,30);
+
+
+
+
 
     }
 
     public boolean verifyIfBoardsIconIsDisplayed(){
-        return driver.findElement(By
-                .xpath("//button[@data-test-id='header-boards-menu-button']"))
-                .isDisplayed();
+        return ButtonBoardsLeftCorner.isDisplayed();
     }
 
     public boolean verifyIfPersonalBoardsHeaderIsDisplayed(){
-        return driver.findElement(By
-                .xpath("//h3[@class='boards-page-board-section-header-name']"))
-                .getText().equals("Personal Boards");
+        return TitleMainPageBoards.equals("Personal Boards");
     }
 
     public void enterMyBoard(){
-        waitUntilElementIsVisible(By.xpath("//div[@title='QA4 Auto']/.."), 20);
-        driver.findElement(By.xpath("//div[@title='QA4 Auto']/..")).click();
+        waitUntilElementIsVisible(myBoard, 20);
+        myBoard.click();
     }
 
 
     public void quantityCheckBefore(){
 
-        waitUntilElementIsVisible(By.xpath("//span[@class='placeholder']"),20);
-        quantityBeg = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
+        waitUntilElementIsVisible(addAnotherListButton,20);
+        quantityBeg = namesList.size();
     }
 
     public void quantityCheckAfter(){
 
-        waitUntilElementIsVisible(By.xpath("//span[@class='placeholder']"),20);
-        quantityEnd = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
+        waitUntilElementIsVisible(addAnotherListButton,20);
+        quantityEnd = namesList.size();
     }
 
     public void creatIfNotLists(){
@@ -61,13 +97,13 @@ public class BoardsPageHelper extends PageBase{
 
         if(quantityBeg == 0){
 
-            waitUntilElementIsClickable(By.xpath("//span[@class='placeholder']"),30);
-            driver.findElement(By.xpath("//span[@class='placeholder']")).click();
-            waitUntilElementIsVisible(By.xpath("//input[@class='list-name-input']"),30);
-            driver.findElement(By.xpath("//input[@class='list-name-input']")).clear();
-            driver.findElement(By.xpath("//input[@class='list-name-input']")).sendKeys("NewList");
-            waitUntilElementIsClickable(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']"),20);
-            driver.findElement(By.xpath("//input[@class='primary mod-list-add-button js-save-edit']")).click();
+            waitUntilElementIsClickable(addAnotherListButton,30);
+            addAnotherListButton.click();
+            waitUntilElementIsVisible(fieldEnterListTitle,30);
+            fieldEnterListTitle.clear();
+            fieldEnterListTitle.sendKeys("NewList");
+            waitUntilElementIsClickable(ButtonAddListSaveList,20);
+            ButtonAddListSaveList.click();
             quantityBeg++;
 
 
@@ -76,69 +112,70 @@ public class BoardsPageHelper extends PageBase{
     }
 
     public void copyList(){
-        waitUntilElementIsClickable(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']"),30);
-        driver.findElement(By.xpath("//a[@class='list-header-extras-menu dark-hover js-open-list-menu icon-sm icon-overflow-menu-horizontal']")).click();
-        waitUntilElementIsVisible(By.xpath("//a[@class='js-copy-list']"),30);
-        driver.findElement(By.xpath("//a[@class='js-copy-list']")).click();
-        waitUntilElementIsClickable(By.xpath("//input[@class='primary wide js-submit']"),20);
-        driver.findElement(By.xpath("//input[@class='primary wide js-submit']")).click();
+        waitUntilElementIsClickable(ListMenuButton,30);
+        ListMenuButton.click();
+        waitUntilElementIsVisible(menuItemCopyList,30);
+        menuItemCopyList.click();
+        waitUntilElementIsClickable(ButtonCreateList,20);
+        ButtonCreateList.click();
 
-        waitUntilElementIsClickable(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"),20);
+        waitUntilElementIsClickable(titleList,20);
 
 
     }
 
     public boolean  copyValidation(){
 
-        waitUntilElementIsClickable(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"),20);
+        waitUntilElementIsClickable(titleList,20);
 
-        int quantityEnd = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']")).size();
+        int quantityEnd = namesList.size();
         System.out.println(quantityEnd);
 
-        List<WebElement> list = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"));
+//        List<WebElement> list = driver.findElements(By.xpath("//textarea[@class='list-header-name mod-list-name js-list-name-input']"));
 
-        int i = list.size();
+        int i = namesList.size();
 
-        return list.get(i-2).getText().equals(list.get(i-1).getText());
+        return namesList.get(i-2).getText().equals(namesList.get(i-1).getText());
 
     }
 
     public void genNameListAndCreat(){
 
-        WebElement addListButton = driver.findElement(By.cssSelector(".placeholder"));
-        String nameAddListButton = addListButton.getText();
-        addListButton.click();
-        waitUntilElementIsVisible(By.cssSelector(".list-name-input"), 10);
+//        WebElement addListButton = driver.findElement(By.cssSelector(".placeholder"));
+        String nameAddListButton = addAnotherListButton.getText();
+        addAnotherListButton.click();
+        waitUntilElementIsVisible(fieldEnterListTitle, 10);
         String str = genRandomString(7);
         //System.out.println("Name button - " + nameAddListButton);
-        int quantityListAtFirst = driver.findElements(By.xpath("//h2")).size();
+        int quantityListAtFirst = namesList.size();
         if (nameAddListButton.equals("Add another list")) {
             boolean exitName = false;
             //System.out.println("Size-" + driver.findElements(By.xpath("//h2/../textarea")).size());
-            for (WebElement element : driver.findElements(By.xpath("//h2/../textarea"))) {
+            for (WebElement element : namesList) {
                 //System.out.println("Name - " + element.getText());
                 if (element.getText().equals(str)) exitName = true;
             }
             if (exitName) str = stringWithRandomNumber(1000, str);
         }
 
-        driver.findElement(By.cssSelector(".list-name-input"))
-                .sendKeys(str);
-        driver.findElement(By.xpath("//input[@type='submit']")).click();
+        fieldEnterListTitle.sendKeys(str);
+        ButtonAddListSaveList.click();
 
-        waitUntilElementIsClickable(By.cssSelector("a.js-cancel-edit"), 10);
-        driver.findElement(By.cssSelector("a.js-cancel-edit")).click();
+        waitUntilElementIsClickable(buttonCancelEdit, 10);
+        buttonCancelEdit.click();
     }
 
 public boolean VerifyQuantityLists(){
 
-        int quantityListAtTheEnd = driver
-            .findElements(By.xpath("//h2")).size();
+        int quantityListAtTheEnd = namesList.size();
 
         return true;
 
 
 }
+
+
+
 
 
 
